@@ -1,0 +1,1250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz de Cálculo Integral</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .quiz-container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 100%;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .quiz-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 5px;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .creator-photo {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid transparent;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 4px;
+            margin: 0 auto 20px;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(102,126,234,0.3);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .creator-photo:hover {
+            transform: scale(1.05);
+            box-shadow: 0 15px 40px rgba(102,126,234,0.4);
+        }
+
+        .creator-photo.story-ring {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            animation: storyGlow 2s linear infinite;
+        }
+
+        @keyframes storyGlow {
+            0% { background: linear-gradient(135deg, #667eea, #764ba2); }
+            25% { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+            50% { background: linear-gradient(135deg, #667eea, #764ba2); }
+            75% { background: linear-gradient(135deg, #4facfe, #00f2fe); }
+            100% { background: linear-gradient(135deg, #667eea, #764ba2); }
+        }
+
+        .creator-photo img {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            object-fit: cover;
+            background: #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            color: #999;
+        }
+
+        .photo-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            animation: fadeIn 0.3s ease;
+        }
+
+        .photo-modal.show {
+            display: flex;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        .photo-modal-content {
+            position: relative;
+            max-width: 90vw;
+            max-height: 90vh;
+        }
+
+        .photo-modal-image {
+            width: 400px;
+            height: 400px;
+            border-radius: 20px;
+            object-fit: cover;
+            border: 6px solid transparent;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            padding: 6px;
+            animation: modalStoryGlow 3s linear infinite;
+            box-shadow: 0 20px 60px rgba(102,126,234,0.5);
+        }
+
+        @keyframes modalStoryGlow {
+            0% { background: linear-gradient(45deg, #667eea, #764ba2, #667eea, #764ba2); }
+            25% { background: linear-gradient(90deg, #4facfe, #00f2fe, #667eea, #764ba2); }
+            50% { background: linear-gradient(135deg, #667eea, #764ba2, #4facfe, #00f2fe); }
+            75% { background: linear-gradient(180deg, #00f2fe, #4facfe, #764ba2, #667eea); }
+            100% { background: linear-gradient(225deg, #764ba2, #667eea, #00f2fe, #4facfe); }
+        }
+
+        .photo-modal-image img {
+            width: 100%;
+            height: 100%;
+            border-radius: 15px;
+            object-fit: cover;
+        }
+
+        .photo-modal-info {
+            text-align: center;
+            color: white;
+            margin-top: 20px;
+        }
+
+        .photo-modal-name {
+            font-size: 1.5em;
+            font-weight: 600;
+            margin-bottom: 5px;
+        }
+
+        .photo-modal-title {
+            font-size: 1.1em;
+            color: #ccc;
+        }
+
+        .close-photo-btn {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background: rgba(255, 255, 255, 0.9);
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #333;
+            transition: all 0.3s ease;
+        }
+
+        .close-photo-btn:hover {
+            background: white;
+            transform: scale(1.1);
+        }
+
+        .creator-name {
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+
+        .institutional-info {
+            text-align: center;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f8f9ff, #f0f2ff);
+            border-radius: 15px;
+            border: 2px solid #e8ebff;
+            box-shadow: 0 5px 15px rgba(102,126,234,0.1);
+        }
+
+        .university-name {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: #2c3e50;
+            margin-bottom: 8px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .course-area {
+            font-size: 1em;
+            font-weight: 600;
+            color: #34495e;
+            margin-bottom: 8px;
+        }
+
+        .professor-name {
+            font-size: 0.95em;
+            color: #555;
+            font-weight: 500;
+        }
+
+        .professor-label {
+            font-size: 0.85em;
+            color: #7f8c8d;
+            margin-right: 5px;
+        }
+
+        .title {
+            color: #333;
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 10px;
+            background: #e0e0e0;
+            border-radius: 5px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea, #764ba2);
+            transition: width 0.3s ease;
+            border-radius: 5px;
+        }
+
+        .question-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            font-size: 0.9em;
+            color: #666;
+        }
+
+        .topic-tag {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 0.8em;
+        }
+
+        .question-container {
+            margin-bottom: 30px;
+        }
+
+        .question {
+            font-size: 1.3em;
+            color: #333;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 15px;
+            border-left: 5px solid #667eea;
+        }
+
+        .help-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .help-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .help-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(40, 167, 69, 0.3);
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 12px;
+            padding: 15px 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.1em;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .option::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
+            transition: left 0.5s ease;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.15);
+        }
+
+        .option:hover::before {
+            left: 100%;
+        }
+
+        .option.selected {
+            border-color: #667eea;
+            background: linear-gradient(135deg, #667eea10, #764ba210);
+            color: #333;
+        }
+
+        .option.correct {
+            border-color: #4CAF50;
+            background: linear-gradient(135deg, #4CAF5020, #8BC34A20);
+            color: #2E7D32;
+        }
+
+        .option.incorrect {
+            border-color: #f44336;
+            background: linear-gradient(135deg, #f4433620, #FF572220);
+            color: #C62828;
+        }
+
+        .explanation {
+            margin-top: 20px;
+            padding: 20px;
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 15px;
+            border-left: 5px solid #f39c12;
+            display: none;
+        }
+
+        .explanation.show {
+            display: block;
+            animation: slideDown 0.5s ease;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .sorry-message {
+            color: #e74c3c;
+            font-weight: bold;
+            font-size: 1.1em;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .step {
+            margin: 10px 0;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border-left: 3px solid #f39c12;
+        }
+
+        .step-title {
+            font-weight: bold;
+            color: #d35400;
+            margin-bottom: 5px;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-top: 30px;
+        }
+
+        .btn {
+            padding: 12px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 1em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(102,126,234,0.3);
+        }
+
+        .btn-secondary {
+            background: #f5f5f5;
+            color: #666;
+            border: 2px solid #e0e0e0;
+        }
+
+        .btn-secondary:hover {
+            background: #e0e0e0;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .score {
+            text-align: center;
+            font-size: 1.2em;
+            color: #666;
+            margin-top: 20px;
+        }
+
+        .author-credit {
+            position: absolute;
+            bottom: 10px;
+            left: 15px;
+            font-size: 0.8em;
+            color: #888;
+            font-style: italic;
+        }
+
+        .results {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .results h2 {
+            color: #333;
+            font-size: 2.2em;
+            margin-bottom: 20px;
+        }
+
+        .final-score {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 20px 0;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .math {
+            font-family: 'Times New Roman', serif;
+            font-style: italic;
+        }
+
+        .chat-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .chat-container {
+            background: white;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 600px;
+            height: 80%;
+            max-height: 600px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .chat-header {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            padding: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .chat-title {
+            font-size: 1.2em;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+            width: 30px;
+            height: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            transition: background 0.3s ease;
+        }
+
+        .close-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+
+        .message {
+            margin-bottom: 15px;
+            padding: 12px 16px;
+            border-radius: 15px;
+            max-width: 80%;
+            word-wrap: break-word;
+        }
+
+        .message.user {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+
+        .message.ai {
+            background: white;
+            color: #333;
+            border: 1px solid #e0e0e0;
+            border-bottom-left-radius: 5px;
+        }
+
+        .chat-input-container {
+            padding: 20px;
+            border-top: 1px solid #e0e0e0;
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input {
+            flex: 1;
+            padding: 12px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 25px;
+            font-size: 14px;
+            outline: none;
+            transition: border-color 0.3s ease;
+        }
+
+        .chat-input:focus {
+            border-color: #28a745;
+        }
+
+        .send-btn {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .send-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.3);
+        }
+
+        @media (max-width: 768px) {
+            .quiz-container {
+                padding: 20px;
+            }
+            
+            .title {
+                font-size: 2em;
+            }
+            
+            .question {
+                font-size: 1.1em;
+            }
+            
+            .controls {
+                flex-direction: column;
+                gap: 15px;
+            }
+
+            .chat-container {
+                width: 95%;
+                height: 90%;
+            }
+
+            .message {
+                max-width: 90%;
+            }
+
+            .institutional-info {
+                padding: 15px;
+            }
+
+            .university-name {
+                font-size: 1em;
+            }
+
+            .course-area {
+                font-size: 0.9em;
+            }
+
+            .professor-name {
+                font-size: 0.85em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="quiz-container">
+        <div class="header">
+            <div class="creator-photo" onclick="openPhotoModal()">
+                <img id="creatorImg" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTAwIiBoZWlnaHQ9IjEwMCIgdmlld0JveD0iMCAwIDEwMCAxMDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iNTAiIGN5PSI1MCIgcj0iNDUiIGZpbGw9IiM2NjdlZWEiLz48dGV4dCB4PSI1MCIgeT0iNTgiIGZvbnQtZmFtaWx5PSJBcmlhbCwgc2Fucy1zZXJpZiIgZm9udC1zaXplPSIzMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BPC90ZXh0Pjwvc3ZnPg==" alt="Agmed Alexander Fernández Silva">
+            </div>
+            <div class="creator-name">Creado por: Agmed Alexander Fernández Silva</div>
+            
+            <!-- Nueva sección de información institucional -->
+            <div class="institutional-info">
+                <div class="university-name">Universidad de la Guajira - Riohacha</div>
+                <div class="course-area">Cálculo Integral</div>
+                <div class="professor-name">
+                    <span class="professor-label">Docente:</span>Jorge Rafael Armenta Mejía
+                </div>
+            </div>
+            
+            <h1 class="title">Quiz de Cálculo Integral</h1>
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill"></div>
+            </div>
+        </div>
+
+        <div id="quizContent">
+            <div class="question-info">
+                <span id="questionNumber">Pregunta 1 de 6</span>
+                <div class="topic-tag" id="topicTag">Integración por Sustitución</div>
+            </div>
+
+            <div class="question-container">
+                <div class="question" id="questionText">
+                    Calcula la integral: <span class="math">∫ 2x(x² + 1)⁵ dx</span>
+                </div>
+
+                <div class="help-container">
+                    <button class="help-btn" onclick="openChat()">
+                        🤖 ¿Necesitas ayuda? Pregunta a la IA
+                    </button>
+                </div>
+
+                <div class="options" id="optionsContainer">
+                    <div class="option" data-option="a">
+                        a) <span class="math">(x² + 1)⁶/6 + C</span>
+                    </div>
+                    <div class="option" data-option="b">
+                        b) <span class="math">(x² + 1)⁵/5 + C</span>
+                    </div>
+                    <div class="option" data-option="c">
+                        c) <span class="math">2(x² + 1)⁶/6 + C</span>
+                    </div>
+                    <div class="option" data-option="d">
+                        d) <span class="math">x(x² + 1)⁵ + C</span>
+                    </div>
+                </div>
+
+                <div class="explanation" id="explanationBox">
+                    <div class="sorry-message">UFF lo siento, sigue intentando bro :)</div>
+                    <div id="explanationContent"></div>
+                </div>
+            </div>
+
+            <div class="controls">
+                <button class="btn btn-secondary" id="prevBtn">Anterior</button>
+                <div class="score">
+                    Puntuación: <span id="currentScore">0</span>/<span id="totalQuestions">6</span>
+                </div>
+                <button class="btn btn-primary" id="nextBtn">Siguiente</button>
+            </div>
+        </div>
+
+        <div id="resultsScreen" style="display: none;">
+            <div class="results">
+                <h2>¡Quiz Completado!</h2>
+                <div class="final-score" id="finalScore">0/6</div>
+                <p id="resultMessage">¡Excelente trabajo!</p>
+                <button class="btn btn-primary" onclick="restartQuiz()">Reiniciar Quiz</button>
+            </div>
+        </div>
+
+        <!-- Chat Modal -->
+        <div class="chat-modal" id="chatModal">
+            <div class="chat-container">
+                <div class="chat-header">
+                    <div class="chat-title">🤖 Asistente de Cálculo Integral</div>
+                    <button class="close-btn" onclick="closeChat()">&times;</button>
+                </div>
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message ai">
+                        ¡Hola! Soy tu asistente de cálculo integral. Puedo ayudarte con:
+                        <br>• Explicar conceptos de integración
+                        <br>• Resolver paso a paso cualquier integral
+                        <br>• Aclarar dudas sobre técnicas de integración
+                        <br><br>¿En qué puedo ayudarte?
+                    </div>
+                </div>
+                <div class="chat-input-container">
+                    <input type="text" class="chat-input" id="chatInput" placeholder="Escribe tu pregunta aquí..." onkeypress="handleChatEnter(event)">
+                    <button class="send-btn" onclick="sendMessage()">Enviar</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Photo Modal -->
+        <div class="photo-modal" id="photoModal">
+            <div class="photo-modal-content">
+                <div class="photo-modal-image">
+                    <img id="modalPhoto" src="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAwIiBoZWlnaHQ9IjQwMCIgdmlld0JveD0iMCAwIDQwMCA0MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGNpcmNsZSBjeD0iMjAwIiBjeT0iMjAwIiByPSIxODAiIGZpbGw9IiM2NjdlZWEiLz48dGV4dCB4PSIyMDAiIHk9IjIyMCIgZm9udC1mYW1pbHk9IkFyaWFsLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjEwMCIgZm9udC13ZWlnaHQ9ImJvbGQiIGZpbGw9IndoaXRlIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5BPC90ZXh0Pjwvc3ZnPg==" alt="Agmed Alexander Fernández Silva">
+                </div>
+                <button class="close-photo-btn" onclick="closePhotoModal()">&times;</button>
+                <div class="photo-modal-info">
+                    <div class="photo-modal-name">Agmed Alexander Fernández Silva</div>
+                    <div class="photo-modal-title">Desarrollador de Cálculo Integral</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="author-credit">
+            Creado por: Agmed Alexander Fernández Silva
+        </div>
+    </div>
+
+    <script>
+        // Base de datos de preguntas con explicaciones
+        const questions = [
+            {
+                topic: "Integración por Sustitución",
+                question: "Calcula la integral: <span class='math'>∫ 2x(x² + 1)⁵ dx</span>",
+                options: {
+                    a: "<span class='math'>(x² + 1)⁶/6 + C</span>",
+                    b: "<span class='math'>(x² + 1)⁵/5 + C</span>",
+                    c: "<span class='math'>2(x² + 1)⁶/6 + C</span>",
+                    d: "<span class='math'>x(x² + 1)⁵ + C</span>"
+                },
+                correct: "a",
+                explanation: [
+                    { title: "Paso 1: Identificar la sustitución", content: "Observamos que tenemos (x² + 1)⁵ y su derivada 2x como factor." },
+                    { title: "Paso 2: Hacer la sustitución", content: "Sea u = x² + 1, entonces du = 2x dx" },
+                    { title: "Paso 3: Reescribir la integral", content: "∫ 2x(x² + 1)⁵ dx = ∫ u⁵ du" },
+                    { title: "Paso 4: Integrar", content: "∫ u⁵ du = u⁶/6 + C" },
+                    { title: "Paso 5: Sustituir de vuelta", content: "u⁶/6 + C = (x² + 1)⁶/6 + C" }
+                ]
+            },
+            {
+                topic: "Integración por Sustitución",
+                question: "Calcula: <span class='math'>∫ cos(3x) dx</span>",
+                options: {
+                    a: "<span class='math'>3sin(3x) + C</span>",
+                    b: "<span class='math'>sin(3x)/3 + C</span>",
+                    c: "<span class='math'>-sin(3x)/3 + C</span>",
+                    d: "<span class='math'>cos(3x)/3 + C</span>"
+                },
+                correct: "b",
+                explanation: [
+                    { title: "Paso 1: Identificar la sustitución", content: "Tenemos cos(3x), donde el argumento es 3x" },
+                    { title: "Paso 2: Hacer la sustitución", content: "Sea u = 3x, entonces du = 3 dx, por lo que dx = du/3" },
+                    { title: "Paso 3: Reescribir la integral", content: "∫ cos(3x) dx = ∫ cos(u) · du/3 = (1/3)∫ cos(u) du" },
+                    { title: "Paso 4: Integrar", content: "(1/3)∫ cos(u) du = (1/3)sin(u) + C" },
+                    { title: "Paso 5: Sustituir de vuelta", content: "(1/3)sin(u) + C = sin(3x)/3 + C" }
+                ]
+            },
+            {
+                topic: "Integración por Sustitución",
+                question: "Para <span class='math'>∫ e^(2x+1) dx</span>, ¿cuál es la respuesta?",
+                options: {
+                    a: "<span class='math'>e^(2x+1)/2 + C</span>",
+                    b: "<span class='math'>2e^(2x+1) + C</span>",
+                    c: "<span class='math'>e^(2x+1) + C</span>",
+                    d: "<span class='math'>e^(2x+1)/(2x+1) + C</span>"
+                },
+                correct: "a",
+                explanation: [
+                    { title: "Paso 1: Identificar la sustitución", content: "El exponente es 2x+1" },
+                    { title: "Paso 2: Hacer la sustitución", content: "Sea u = 2x+1, entonces du = 2 dx, por lo que dx = du/2" },
+                    { title: "Paso 3: Reescribir la integral", content: "∫ e^(2x+1) dx = ∫ e^u · du/2 = (1/2)∫ e^u du" },
+                    { title: "Paso 4: Integrar", content: "(1/2)∫ e^u du = (1/2)e^u + C" },
+                    { title: "Paso 5: Sustituir de vuelta", content: "(1/2)e^u + C = e^(2x+1)/2 + C" }
+                ]
+            },
+            {
+                topic: "Integrales de Potencias",
+                question: "Calcula: <span class='math'>∫ x⁵ dx</span>",
+                options: {
+                    a: "<span class='math'>5x⁴ + C</span>",
+                    b: "<span class='math'>x⁶/6 + C</span>",
+                    c: "<span class='math'>x⁴/4 + C</span>",
+                    d: "<span class='math'>6x⁶ + C</span>"
+                },
+                correct: "b",
+                explanation: [
+                    { title: "Paso 1: Aplicar la regla de potencias", content: "Para ∫ x^n dx = x^(n+1)/(n+1) + C, donde n ≠ -1" },
+                    { title: "Paso 2: Identificar n", content: "En este caso, n = 5" },
+                    { title: "Paso 3: Aplicar la fórmula", content: "∫ x⁵ dx = x^(5+1)/(5+1) + C = x⁶/6 + C" }
+                ]
+            },
+            {
+                topic: "Funciones Trigonométricas",
+                question: "Calcula: <span class='math'>∫ sin x dx</span>",
+                options: {
+                    a: "<span class='math'>cos x + C</span>",
+                    b: "<span class='math'>-cos x + C</span>",
+                    c: "<span class='math'>sin x + C</span>",
+                    d: "<span class='math'>-sin x + C</span>"
+                },
+                correct: "b",
+                explanation: [
+                    { title: "Paso 1: Recordar la antiderivada", content: "La antiderivada de sin x es -cos x" },
+                    { title: "Paso 2: Verificar derivando", content: "d/dx(-cos x) = -(-sin x) = sin x ✓" },
+                    { title: "Paso 3: Agregar constante", content: "∫ sin x dx = -cos x + C" }
+                ]
+            },
+            {
+                topic: "Sustitución para Racionalizar",
+                question: "Para <span class='math'>∫ 1/√(4-x²) dx</span>, la respuesta es:",
+                options: {
+                    a: "<span class='math'>arcsin(x/2) + C</span>",
+                    b: "<span class='math'>arccos(x/2) + C</span>",
+                    c: "<span class='math'>arctan(x/2) + C</span>",
+                    d: "<span class='math'>ln|x/2| + C</span>"
+                },
+                correct: "a",
+                explanation: [
+                    { title: "Paso 1: Reconocer la forma", content: "Esta integral tiene la forma ∫ 1/√(a²-x²) dx" },
+                    { title: "Paso 2: Identificar a²", content: "Comparando con √(4-x²), tenemos a² = 4, por lo que a = 2" },
+                    { title: "Paso 3: Aplicar la fórmula", content: "∫ 1/√(a²-x²) dx = arcsin(x/a) + C" },
+                    { title: "Paso 4: Sustituir a = 2", content: "∫ 1/√(4-x²) dx = arcsin(x/2) + C" }
+                ]
+            }
+        ];
+
+        let currentQuestion = 0;
+        let score = 0;
+        let selectedAnswer = null;
+        let answered = false;
+        let userAnswers = [];
+
+        // Elementos del DOM
+        const questionNumberEl = document.getElementById('questionNumber');
+        const topicTagEl = document.getElementById('topicTag');
+        const questionTextEl = document.getElementById('questionText');
+        const optionsContainerEl = document.getElementById('optionsContainer');
+        const prevBtnEl = document.getElementById('prevBtn');
+        const nextBtnEl = document.getElementById('nextBtn');
+        const currentScoreEl = document.getElementById('currentScore');
+        const totalQuestionsEl = document.getElementById('totalQuestions');
+        const progressFillEl = document.getElementById('progressFill');
+        const quizContentEl = document.getElementById('quizContent');
+        const resultsScreenEl = document.getElementById('resultsScreen');
+        const explanationBoxEl = document.getElementById('explanationBox');
+        const explanationContentEl = document.getElementById('explanationContent');
+
+        function initializeQuiz() {
+            totalQuestionsEl.textContent = questions.length;
+            currentScoreEl.textContent = score;
+            userAnswers = new Array(questions.length).fill(null);
+            displayQuestion();
+        }
+
+        function displayQuestion() {
+            const question = questions[currentQuestion];
+            const userAnswer = userAnswers[currentQuestion];
+            
+            questionNumberEl.textContent = `Pregunta ${currentQuestion + 1} de ${questions.length}`;
+            topicTagEl.textContent = question.topic;
+            questionTextEl.innerHTML = question.question;
+            
+            explanationBoxEl.classList.remove('show');
+            
+            const progress = ((currentQuestion + 1) / questions.length) * 100;
+            progressFillEl.style.width = `${progress}%`;
+            
+            optionsContainerEl.innerHTML = '';
+            Object.keys(question.options).forEach(key => {
+                const optionEl = document.createElement('div');
+                optionEl.className = 'option';
+                optionEl.setAttribute('data-option', key);
+                optionEl.innerHTML = `${key}) ${question.options[key]}`;
+                
+                if (userAnswer !== null) {
+                    if (key === question.correct) {
+                        optionEl.classList.add('correct');
+                    } else if (key === userAnswer) {
+                        optionEl.classList.add('incorrect');
+                    }
+                } else {
+                    optionEl.addEventListener('click', () => selectAnswer(key));
+                }
+                
+                optionsContainerEl.appendChild(optionEl);
+            });
+            
+            if (userAnswer !== null && userAnswer !== question.correct) {
+                showExplanation(question);
+            }
+            
+            prevBtnEl.disabled = currentQuestion === 0;
+            nextBtnEl.textContent = currentQuestion === questions.length - 1 ? 'Finalizar' : 'Siguiente';
+            
+            answered = userAnswer !== null;
+            selectedAnswer = userAnswer;
+        }
+
+        function selectAnswer(answer) {
+            if (answered) return;
+            
+            selectedAnswer = answer;
+            const question = questions[currentQuestion];
+            
+            userAnswers[currentQuestion] = answer;
+            
+            document.querySelectorAll('.option').forEach(option => {
+                const optionKey = option.getAttribute('data-option');
+                option.classList.remove('selected', 'correct', 'incorrect');
+                
+                if (optionKey === question.correct) {
+                    option.classList.add('correct');
+                } else if (optionKey === answer) {
+                    option.classList.add('incorrect');
+                }
+                
+                option.style.cursor = 'default';
+                option.onclick = null;
+            });
+            
+            if (answer !== question.correct) {
+                showExplanation(question);
+            }
+            
+            if (answer === question.correct) {
+                score++;
+                currentScoreEl.textContent = score;
+            }
+            
+            answered = true;
+        }
+
+        function showExplanation(question) {
+            explanationContentEl.innerHTML = '';
+            
+            question.explanation.forEach(step => {
+                const stepEl = document.createElement('div');
+                stepEl.className = 'step';
+                stepEl.innerHTML = `
+                    <div class="step-title">${step.title}</div>
+                    <div>${step.content}</div>
+                `;
+                explanationContentEl.appendChild(stepEl);
+            });
+            
+            explanationBoxEl.classList.add('show');
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < questions.length - 1) {
+                currentQuestion++;
+                displayQuestion();
+            } else {
+                showResults();
+            }
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        function showResults() {
+            quizContentEl.style.display = 'none';
+            resultsScreenEl.style.display = 'block';
+            
+            const finalScoreEl = document.getElementById('finalScore');
+            const resultMessageEl = document.getElementById('resultMessage');
+            
+            finalScoreEl.textContent = `${score}/${questions.length}`;
+            
+            const percentage = (score / questions.length) * 100;
+            let message = '';
+            
+            if (percentage >= 90) {
+                message = '¡Excelente! Dominas muy bien el cálculo integral.';
+            } else if (percentage >= 80) {
+                message = '¡Muy bien! Tienes un buen conocimiento del tema.';
+            } else if (percentage >= 70) {
+                message = 'Bien hecho. Sigue practicando para mejorar.';
+            } else if (percentage >= 60) {
+                message = 'No está mal, pero necesitas más práctica.';
+            } else {
+                message = 'Necesitas estudiar más los conceptos básicos.';
+            }
+            
+            resultMessageEl.textContent = message;
+        }
+
+        function restartQuiz() {
+            currentQuestion = 0;
+            score = 0;
+            selectedAnswer = null;
+            answered = false;
+            userAnswers = new Array(questions.length).fill(null);
+            
+            quizContentEl.style.display = 'block';
+            resultsScreenEl.style.display = 'none';
+            
+            currentScoreEl.textContent = score;
+            displayQuestion();
+        }
+
+        function openChat() {
+            document.getElementById('chatModal').style.display = 'flex';
+        }
+
+        function closeChat() {
+            document.getElementById('chatModal').style.display = 'none';
+        }
+
+        function handleChatEnter(event) {
+            if (event.key === 'Enter') {
+                sendMessage();
+            }
+        }
+
+        function sendMessage() {
+            const chatInput = document.getElementById('chatInput');
+            const chatMessages = document.getElementById('chatMessages');
+            const message = chatInput.value.trim();
+            
+            if (!message) return;
+            
+            const userMessage = document.createElement('div');
+            userMessage.className = 'message user';
+            userMessage.textContent = message;
+            chatMessages.appendChild(userMessage);
+            
+            chatInput.value = '';
+            
+            setTimeout(() => {
+                const aiResponse = generateAIResponse(message);
+                const aiMessage = document.createElement('div');
+                aiMessage.className = 'message ai';
+                aiMessage.innerHTML = aiResponse;
+                chatMessages.appendChild(aiMessage);
+                
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }, 1000);
+            
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+
+        function generateAIResponse(userMessage) {
+            const lowerMessage = userMessage.toLowerCase();
+            
+            if (lowerMessage.includes('sustitución') || lowerMessage.includes('sustituir')) {
+                return `
+                    <strong>🔄 Integración por Sustitución:</strong><br>
+                    1. Identifica una función y su derivada en la integral<br>
+                    2. Haz u = función interna<br>
+                    3. Calcula du = derivada de u · dx<br>
+                    4. Reemplaza en la integral<br>
+                    5. Integra y sustituye de vuelta<br><br>
+                    <strong>Ejemplo:</strong> Para ∫ 2x(x²+1)⁵ dx<br>
+                    • u = x²+1, du = 2x dx<br>
+                    • ∫ u⁵ du = u⁶/6 + C = (x²+1)⁶/6 + C
+                `;
+            }
+            
+            if (lowerMessage.includes('potencia') || lowerMessage.includes('x^')) {
+                return `
+                    <strong>📐 Integrales de Potencias:</strong><br>
+                    La regla básica es: ∫ x^n dx = x^(n+1)/(n+1) + C<br><br>
+                    <strong>Casos especiales:</strong><br>
+                    • ∫ x dx = x²/2 + C<br>
+                    • ∫ x² dx = x³/3 + C<br>
+                    • ∫ 1/x dx = ln|x| + C (n = -1)<br>
+                    • ∫ 1/x² dx = -1/x + C<br><br>
+                    <strong>Consejo:</strong> Siempre suma 1 al exponente y divide por el nuevo exponente.
+                `;
+            }
+            
+            if (lowerMessage.includes('trigonométrica') || lowerMessage.includes('sin') || lowerMessage.includes('cos') || lowerMessage.includes('tan')) {
+                return `
+                    <strong>📊 Integrales Trigonométricas Básicas:</strong><br>
+                    • ∫ sin x dx = -cos x + C<br>
+                    • ∫ cos x dx = sin x + C<br>
+                    • ∫ sec²x dx = tan x + C<br>
+                    • ∫ csc²x dx = -cot x + C<br>
+                    • ∫ sec x tan x dx = sec x + C<br>
+                    • ∫ csc x cot x dx = -csc x + C<br><br>
+                    <strong>Truco:</strong> Memoriza las derivadas trigonométricas, las integrales son el proceso inverso.
+                `;
+            }
+            
+            if (lowerMessage.includes('racionalizar') || lowerMessage.includes('arcsin') || lowerMessage.includes('arctan')) {
+                return `
+                    <strong>🔢 Sustitución para Racionalizar:</strong><br>
+                    <strong>Formas estándar:</strong><br>
+                    • ∫ 1/√(a²-x²) dx = arcsin(x/a) + C<br>
+                    • ∫ 1/(a²+x²) dx = (1/a)arctan(x/a) + C<br>
+                    • ∫ 1/√(x²-a²) dx = ln|x + √(x²-a²)| + C<br><br>
+                    <strong>Consejo:</strong> Identifica la forma a²±x² y usa la fórmula correspondiente.
+                `;
+            }
+            
+            if (lowerMessage.includes('ayuda') || lowerMessage.includes('no entiendo') || lowerMessage.includes('difícil')) {
+                return `
+                    <strong>🤝 ¡Estoy aquí para ayudarte!</strong><br>
+                    Te puedo ayudar con:<br>
+                    • Explicar cualquier técnica de integración<br>
+                    • Resolver paso a paso integrales específicas<br>
+                    • Aclarar conceptos que no entiendas<br>
+                    • Dar consejos para identificar qué método usar<br><br>
+                    <strong>Solo escribe tu integral o pregunta específica y te ayudo! 😊</strong>
+                `;
+            }
+            
+            return `
+                <strong>🤖 Respuesta del Asistente:</strong><br>
+                Entiendo tu pregunta sobre "${userMessage}". <br><br>
+                <strong>Consejos generales para integrales:</strong><br>
+                1. <strong>Identifica el tipo:</strong> ¿Es sustitución, potencias, trigonométricas?<br>
+                2. <strong>Busca patrones:</strong> ¿Hay una función y su derivada juntas?<br>
+                3. <strong>Usa fórmulas conocidas:</strong> Memoriza las integrales básicas<br>
+                4. <strong>Practica:</strong> La integración mejora con la práctica<br><br>
+                ¿Tienes alguna integral específica que quieras que resuelva paso a paso?
+            `;
+        }
+
+        function openPhotoModal() {
+            document.getElementById('photoModal').classList.add('show');
+        }
+
+        function closePhotoModal() {
+            document.getElementById('photoModal').classList.remove('show');
+        }
+
+        document.getElementById('photoModal').addEventListener('click', (e) => {
+            if (e.target.id === 'photoModal') {
+                closePhotoModal();
+            }
+        });
+
+        async function loadUserPhoto() {
+            console.log('Usando avatar con inicial A por limitaciones del entorno');
+        }
+
+        nextBtnEl.addEventListener('click', () => {
+            if (currentQuestion === questions.length - 1) {
+                showResults();
+            } else {
+                nextQuestion();
+            }
+        });
+
+        prevBtnEl.addEventListener('click', prevQuestion);
+
+        document.getElementById('chatModal').addEventListener('click', (e) => {
+            if (e.target.id === 'chatModal') {
+                closeChat();
+            }
+        });
+
+        initializeQuiz();
+        loadUserPhoto();
+    </script>
+</body>
+</html>
